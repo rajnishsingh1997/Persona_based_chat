@@ -1,17 +1,15 @@
-import React from "react";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 
 const ChatScreen = () => {
   const [userQuery, setUserQuery] = useState("");
-  const [modelResponse, setModelResponse] = useState("");
+  const [messages, setMessages] = useState([]);
   const [error, setError] = useState({
     message: "",
   });
 
   async function sendUserInput(userQuery) {
     if (!userQuery) {
-      throw new Error("input string not provided");
+      throw new Error("Input string not provided");
     }
     const payload = {
       query: userQuery,
@@ -33,14 +31,18 @@ const ChatScreen = () => {
     }
   }
 
-  const handleInputUserQuery = (e) => {
-    setUserQuery(e.target.value);
-  };
+  const handleSubmitUserMessage = async () => {
+    if (!userQuery.trim()) return;
+    const newMessages = [...messages, { sender: "user", text: userQuery }];
+    setMessages(newMessages);
+    setUserQuery("");
 
-  const handleSubmitUserMessage = async (userQuery) => {
     try {
       const responseFromModel = await sendUserInput(userQuery);
-      setModelResponse(responseFromModel.message);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: responseFromModel.message },
+      ]);
     } catch (error) {
       setError({
         message: error.message,
@@ -49,21 +51,42 @@ const ChatScreen = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-3">
-      <input
-        value={userQuery}
-        onChange={handleInputUserQuery}
-        placeholder="Enter your message.."
-        className="border-2 border-black px-4 py-2 rounded w-72"
-      />
-      <button
-        onClick={() => {
-          handleSubmitUserMessage(userQuery);
-        }}
-        className="bg-blue-500 text-white font-semibold px-6 py-2 rounded hover:bg-blue-600"
-      >
-        Send
-      </button>
+    <div className="flex flex-col h-screen bg-gray-100">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`flex ${
+              msg.sender === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`px-4 py-2 rounded-lg max-w-xs ${
+                msg.sender === "user"
+                  ? "bg-blue-500 text-white rounded-br-none"
+                  : "bg-gray-300 text-black rounded-bl-none"
+              }`}
+            >
+              {msg.text}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-4 border-t bg-white flex space-x-2">
+        <input
+          value={userQuery}
+          onChange={(e) => setUserQuery(e.target.value)}
+          placeholder="Type your message..."
+          className="flex-1 border border-gray-400 rounded px-4 py-2 focus:outline-none"
+        />
+        <button
+          onClick={handleSubmitUserMessage}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 };
