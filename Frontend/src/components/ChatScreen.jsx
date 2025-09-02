@@ -6,7 +6,6 @@ const ChatScreen = () => {
   const [userQuery, setUserQuery] = useState("");
   const [modelResponse, setModelResponse] = useState("");
   const [error, setError] = useState({
-    status: "",
     message: "",
   });
 
@@ -28,7 +27,6 @@ const ChatScreen = () => {
       return response.json();
     } catch (error) {
       setError({
-        status: "false",
         message: error.message,
       });
       throw new Error(error);
@@ -40,9 +38,13 @@ const ChatScreen = () => {
   };
 
   const handleSubmitUserMessage = async (userQuery) => {
-    const responseFromModel = await sendUserInput(userQuery);
-    if (responseFromModel.success) {
+    try {
+      const responseFromModel = await sendUserInput(userQuery);
       setModelResponse(responseFromModel.message);
+    } catch (error) {
+      setError({
+        message: error.message,
+      });
     }
   };
 
