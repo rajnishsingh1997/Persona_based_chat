@@ -4,24 +4,35 @@ import { useQuery } from "@tanstack/react-query";
 
 const ChatScreen = () => {
   const [userQuery, setUserQuery] = useState("");
+  const [modelResponse, setModelResponse] = useState("");
+  const [error, setError] = useState({
+    status: "",
+    message: "",
+  });
 
   async function sendUserInput(userQuery) {
-    console.log("userQuery from api calling function", userQuery);
+    if (!userQuery) {
+      throw new Error("input string not provided");
+    }
     const payload = {
       query: userQuery,
     };
-    const response = await fetch("http://localhost:3000/chat/start", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-    console.log(response);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    try {
+      const response = await fetch("http://localhost:3000/chat/start", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      return response.json();
+    } catch (error) {
+      setError({
+        status: "false",
+        message: error.message,
+      });
+      throw new Error(error);
     }
-    return response.json();
   }
 
   const handleInputUserQuery = (e) => {
@@ -29,12 +40,16 @@ const ChatScreen = () => {
   };
 
   const handleSubmitUserMessage = async (userQuery) => {
-    sendUserInput(userQuery);
+    const responseFromModel = await sendUserInput(userQuery);
+    if (responseFromModel.success) {
+      setModelResponse(responseFromModel.message);
+    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen space-y-3">
       <input
+        value={userQuery}
         onChange={handleInputUserQuery}
         placeholder="Enter your message.."
         className="border-2 border-black px-4 py-2 rounded w-72"
