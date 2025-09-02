@@ -5,8 +5,8 @@ const chatRoute = express.Router();
 const client = new OpenAI();
 
 chatRoute.post("/start", async (req, res) => {
-  const { query } = req.body;
-  if (!query) {
+  const { query } = req?.body;
+  if (!query || query === "undefined") {
     return res.status(400).json({ error: "Message field is required" });
   }
   const formattedUserQuery = query.trim().toLowerCase();
