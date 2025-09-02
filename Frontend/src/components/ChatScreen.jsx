@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 const ChatScreen = () => {
   const [userQuery, setUserQuery] = useState("");
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState({
+    status: false,
     message: "",
   });
 
@@ -25,6 +27,7 @@ const ChatScreen = () => {
       return response.json();
     } catch (error) {
       setError({
+        status: true,
         message: error.message,
       });
       throw new Error(error);
@@ -45,10 +48,15 @@ const ChatScreen = () => {
       ]);
     } catch (error) {
       setError({
+        status: true,
         message: error.message,
       });
     }
   };
+
+  if (error.status) {
+    return <div>{error.message}</div>;
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -61,13 +69,13 @@ const ChatScreen = () => {
             }`}
           >
             <div
-              className={`px-4 py-2 rounded-lg max-w-xs ${
+              className={`px-4 py-2 w-fit rounded-lg max-w-[80%] break-words ${
                 msg.sender === "user"
                   ? "bg-blue-500 text-white rounded-br-none"
                   : "bg-gray-300 text-black rounded-bl-none"
               }`}
             >
-              {msg.text}
+              <ReactMarkdown>{msg.text}</ReactMarkdown>
             </div>
           </div>
         ))}

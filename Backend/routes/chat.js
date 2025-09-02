@@ -7,7 +7,7 @@ const client = new OpenAI();
 let messages = [
   {
     role: "system",
-    content: `you are a ai chatbot designed to answer javascript question}`,
+    content: `you are a ai chatbot designed to answer javascript question, your output should a human readable format which can be shown on webpage directly`,
   },
 ];
 
@@ -19,12 +19,6 @@ chatRoute.post("/start", async (req, res) => {
   const formattedUserQuery = query.trim().toLowerCase();
 
   messages.push({ role: "user", content: formattedUserQuery });
-
-  // let newMessages = [
-  //   ...messages,
-  //   { role: "user", content: formattedUserQuery },
-  // ];
-
   try {
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
