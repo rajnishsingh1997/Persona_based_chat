@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Select, { components } from "react-select";
-import { useNavigate } from "react-router";
 
 const SelectionScreen = () => {
   const { Option } = components;
@@ -17,7 +16,7 @@ const SelectionScreen = () => {
       icon: "https://media.licdn.com/dms/image/v2/D5603AQGibOAbOze1IA/profile-displayphoto-shrink_800_800/B56ZRk01SFGoAg-/0/1736858359580?e=1759968000&v=beta&t=MQxIXWzJXNaq5z0p1njyo0aDD3dO6msTcr3msYk5bSg",
     },
   ];
-  let navigate = useNavigate();
+
   const IconOption = (props) => (
     <Option
       {...props}
@@ -33,30 +32,7 @@ const SelectionScreen = () => {
   );
 
   const handleSubmit = async (selectedAvatar) => {
-    const payload = {
-      avatar: selectedAvatar,
-    };
-    try {
-      const response = await fetch(
-        "http://localhost:3000/avatar/selectAvatar",
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify(payload),
-        }
-      );
-      if (!response) {
-        throw new Error("network call failed, please check console");
-      }
-      const responseJson = await response.json();
-      if (responseJson.success) {
-        navigate("/");
-      }
-    } catch (error) {
-      throw new Error(error);
-    }
+    console.log(selectedAvatar);
   };
 
   return (
