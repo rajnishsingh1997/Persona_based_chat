@@ -7,7 +7,6 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/selectAvatar" element={<SelectionScreen />} />
         <Route path="/" element={<ChatScreen />} />
       </Routes>
     </>
