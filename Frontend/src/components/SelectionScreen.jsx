@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Select, { components } from "react-select";
+import { useNavigate } from "react-router";
 
-const SelectionScreen = ({ setSelectedAvatar }) => {
-  const { Option, SingleValue } = components;
-
+const SelectionScreen = () => {
+  const { Option } = components;
+  const [selectedAvatar, setSelectedAvatar] = useState("");
   const options = [
     {
       value: "hitesh",
@@ -16,55 +17,73 @@ const SelectionScreen = ({ setSelectedAvatar }) => {
       icon: "https://media.licdn.com/dms/image/v2/D5603AQGibOAbOze1IA/profile-displayphoto-shrink_800_800/B56ZRk01SFGoAg-/0/1736858359580?e=1759968000&v=beta&t=MQxIXWzJXNaq5z0p1njyo0aDD3dO6msTcr3msYk5bSg",
     },
   ];
-
-  //   const handleSelectedAvatar = (selectedAvatar) => {
-  //     setSelectedAvatar(selectedAvatar);
-  //   };
-
-  const IconSingleValue = (props) => (
-    <SingleValue {...props}>
-      <img
-        src={props.data.icon}
-        style={{
-          height: "30px",
-          width: "30px",
-          borderRadius: "50%",
-          marginRight: "10px",
-        }}
-      />
-      {props.data.label}
-    </SingleValue>
-  );
-
+  let navigate = useNavigate();
   const IconOption = (props) => (
-    <Option {...props}>
+    <Option
+      {...props}
+      className="flex items-center space-x-3 px-3 py-2 hover:bg-blue-200 rounded-md"
+    >
       <img
         src={props.data.icon}
-        style={{
-          height: "30px",
-          width: "30px",
-          borderRadius: "50%",
-          marginRight: "10px",
-        }}
+        className="w-10 h-10 rounded-full object-cover"
+        alt={props.data.label}
       />
-      {props.data.label}
+      <span className="text-blue-900 font-medium ">{props.data.label}</span>
     </Option>
   );
+
+  const handleSubmit = async (selectedAvatar) => {
+    const payload = {
+      avatar: selectedAvatar,
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:3000/avatar/selectAvatar",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!response) {
+        throw new Error("network call failed, please check console");
+      }
+      const responseJson = await response.json();
+      if (responseJson.success) {
+        navigate("/");
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
   return (
-    <div>
-      {/* <select
-        onChange={(e) => {
-          handleSelectedAvatar(e.target.value);
-        }}
-      >
-        <option>hitesh</option>
-        <option>piyush</option>
-      </select> */}
-      <Select
-        placeholder="select your hero"
-        components={{ Option: IconOption }}
-        options={options}
-      />
+    <div className="fixed inset-0 bg-blue-900/50 flex justify-center items-center z-50">
+      <div className="bg-blue-100 p-10 rounded-2xl shadow-lg w-96 max-w-[90%] text-center">
+        <h2 className="text-2xl font-semibold text-blue-900 mb-6">
+          Select Your Avatar
+        </h2>
+
+        <Select
+          placeholder="Choose your hero"
+          components={{ Option: IconOption }}
+          options={options}
+          onChange={(selected) => setSelectedAvatar(selected.value)}
+          className="mb-6"
+          classNamePrefix="react-select"
+        />
+
+        <button
+          onClick={() => {
+            handleSubmit(selectedAvatar);
+          }}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg transition"
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 };
