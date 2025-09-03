@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <ChatScreen />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </>
   );
 }

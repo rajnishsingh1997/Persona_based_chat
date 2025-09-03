@@ -1,5 +1,6 @@
 import express from "express";
 import OpenAI from "openai";
+import system_prompt from "../utils/system_prompt.js";
 
 const chatRoute = express.Router();
 const client = new OpenAI();
@@ -7,7 +8,7 @@ const client = new OpenAI();
 let messages = [
   {
     role: "system",
-    content: `you are a ai chatbot designed to answer javascript question, your output should a human readable format which can be shown on webpage directly`,
+    content: `${system_prompt}`,
   },
 ];
 
