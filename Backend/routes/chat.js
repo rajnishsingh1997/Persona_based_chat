@@ -1,6 +1,6 @@
 import express from "express";
 import OpenAI from "openai";
-import system_prompt from "../utils/system_prompt.js";
+import {system_prompt,system_prompt_two} from "../utils/system_prompt.js";
 
 const chatRoute = express.Router();
 const client = new OpenAI();
