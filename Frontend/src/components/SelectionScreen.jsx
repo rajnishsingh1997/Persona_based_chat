@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import Select, { components } from "react-select";
+import { useNavigate } from "react-router";
 
-const SelectionScreen = () => {
+const SelectionScreen = ({ setSelectedAvatar }) => {
   const { Option } = components;
-  const [selectedAvatar, setSelectedAvatar] = useState("");
+  let navigate = useNavigate();
+
   const options = [
     {
       value: "hitesh",
@@ -30,11 +32,7 @@ const SelectionScreen = () => {
       <span className="text-blue-900 font-medium ">{props.data.label}</span>
     </Option>
   );
-
-  const handleSubmit = async (selectedAvatar) => {
-    console.log(selectedAvatar);
-  };
-
+  
   return (
     <div className="fixed inset-0 bg-blue-900/50 flex justify-center items-center z-50">
       <div className="bg-blue-100 p-10 rounded-2xl shadow-lg w-96 max-w-[90%] text-center">
@@ -46,19 +44,13 @@ const SelectionScreen = () => {
           placeholder="Choose your hero"
           components={{ Option: IconOption }}
           options={options}
-          onChange={(selected) => setSelectedAvatar(selected.value)}
+          onChange={(selected) => {
+            setSelectedAvatar(selected.value);
+            navigate("/chat");
+          }}
           className="mb-6"
           classNamePrefix="react-select"
         />
-
-        <button
-          onClick={() => {
-            handleSubmit(selectedAvatar);
-          }}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg transition"
-        >
-          Submit
-        </button>
       </div>
     </div>
   );

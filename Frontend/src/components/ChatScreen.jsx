@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { system_prompt, system_prompt_two } from "../utils/system_prompt";
 
-const ChatScreen = () => {
+const ChatScreen = ({ selectedAvatar }) => {
   const [userQuery, setUserQuery] = useState("");
   const [messages, setMessages] = useState([]);
+  const [convoHistory, setConvoHistory] = useState([
+    {
+      role: "system",
+      content: `${
+        selectedAvatar == "hitesh" ? system_prompt : system_prompt_two
+      }`,
+    },
+  ]);
   const [error, setError] = useState({
     status: false,
     message: "",
@@ -37,6 +46,10 @@ const ChatScreen = () => {
   const handleSubmitUserMessage = async () => {
     if (!userQuery.trim()) return;
     const newMessages = [...messages, { sender: "user", text: userQuery }];
+    setConvoHistory((prevMessages) => [
+      ...prevMessages,
+      { role: "user", content: userQuery },
+    ]);
     setMessages(newMessages);
     setUserQuery("");
 
@@ -45,6 +58,10 @@ const ChatScreen = () => {
       setMessages((prev) => [
         ...prev,
         { sender: "bot", text: responseFromModel.message },
+      ]);
+      setConvoHistory((prevMessages) => [
+        ...prevMessages,
+        { role: "assistant", content: responseFromModel.message },
       ]);
     } catch (error) {
       setError({
@@ -57,6 +74,8 @@ const ChatScreen = () => {
   if (error.status) {
     return <div>{error.message}</div>;
   }
+
+  console.log(convoHistory);
 
   return (
     <>
