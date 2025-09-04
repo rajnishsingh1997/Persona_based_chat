@@ -18,20 +18,15 @@ const ChatScreen = ({ selectedAvatar }) => {
     message: "",
   });
 
-  async function sendUserInput(userQuery) {
-    if (!userQuery) {
-      throw new Error("Input string not provided");
-    }
-    const payload = {
-      query: userQuery,
-    };
+  async function sendUserInput(convoHistory) {
+    let payload = convoHistory;
     try {
       const response = await fetch("http://localhost:3000/chat/start", {
         headers: {
           "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(payload),
+        body: JSON.stringify({conversation:payload}),
       });
       return response.json();
     } catch (error) {
@@ -54,7 +49,7 @@ const ChatScreen = ({ selectedAvatar }) => {
     setUserQuery("");
 
     try {
-      const responseFromModel = await sendUserInput(userQuery);
+      const responseFromModel = await sendUserInput(convoHistory);
       setMessages((prev) => [
         ...prev,
         { sender: "bot", text: responseFromModel.message },
@@ -74,8 +69,6 @@ const ChatScreen = ({ selectedAvatar }) => {
   if (error.status) {
     return <div>{error.message}</div>;
   }
-
-  console.log(convoHistory);
 
   return (
     <>
