@@ -10,6 +10,10 @@ app.use(cors());
 app.use(express.json());
 app.use("/chat", chatRoute);
 
+app.get('/', (req, res) => {
+  res.send('Backend is live!');
+});
+
 app.listen(port, () => {
   console.log("server working");
 });
