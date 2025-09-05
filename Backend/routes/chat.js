@@ -1,16 +1,8 @@
 import express from "express";
 import OpenAI from "openai";
-import { system_prompt, system_prompt_two } from "../utils/system_prompt.js";
 
 const chatRoute = express.Router();
 const client = new OpenAI();
-
-let messages = [
-  {
-    role: "system",
-    content: `${system_prompt}`,
-  },
-];
 
 chatRoute.post("/start", async (req, res) => {
   const messages = req.body;
