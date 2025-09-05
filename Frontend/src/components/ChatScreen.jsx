@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { system_prompt, system_prompt_two } from "../utils/system_prompt";
 
@@ -20,13 +20,15 @@ const ChatScreen = ({ selectedAvatar }) => {
 
   async function sendUserInput(convoHistory) {
     let payload = convoHistory;
+
+    console.log(payload);
     try {
       const response = await fetch("http://localhost:3000/chat/start", {
         headers: {
           "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify({conversation:payload}),
+        body: JSON.stringify({ conversation: payload }),
       });
       return response.json();
     } catch (error) {
@@ -41,22 +43,30 @@ const ChatScreen = ({ selectedAvatar }) => {
   const handleSubmitUserMessage = async () => {
     if (!userQuery.trim()) return;
     const newMessages = [...messages, { sender: "user", text: userQuery }];
-    setConvoHistory((prevMessages) => [
-      ...prevMessages,
+    const updatedConvo = [
+      ...convoHistory,
       { role: "user", content: userQuery },
-    ]);
+    ];
+    setConvoHistory(updatedConvo);
     setMessages(newMessages);
     setUserQuery("");
 
     try {
-      const responseFromModel = await sendUserInput(convoHistory);
+      const responseFromModel = await sendUserInput(updatedConvo);
+      console.log(responseFromModel);
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: responseFromModel.message },
+        {
+          sender: "bot",
+          text: responseFromModel.message.choices[0].message.content,
+        },
       ]);
       setConvoHistory((prevMessages) => [
         ...prevMessages,
-        { role: "assistant", content: responseFromModel.message },
+        {
+          role: "assistant",
+          content: responseFromModel.message.choices[0].message.content,
+        },
       ]);
     } catch (error) {
       setError({
