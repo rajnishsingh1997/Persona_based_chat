@@ -27,7 +27,7 @@ const ChatScreen = ({ selectedAvatar }) => {
     let payload = convoHistory;
     setIncomingResponse(true);
     try {
-      const response = await fetch("http://localhost:3000/chat/start", {
+      const response = await fetch("https://persona-based-chat-3.onrender.com/chat/start", {
         headers: {
           "Content-Type": "application/json",
         },
