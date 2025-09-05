@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { system_prompt, system_prompt_two } from "../utils/system_prompt";
+import { useNavigate } from "react-router";
+import TypingIndicator from "./IncomingChatLoading";
 
 const ChatScreen = ({ selectedAvatar }) => {
   const [userQuery, setUserQuery] = useState("");
@@ -17,11 +19,13 @@ const ChatScreen = ({ selectedAvatar }) => {
     status: false,
     message: "",
   });
+  const [incomingResponse, setIncomingResponse] = useState(false);
+
+  let navigate = useNavigate();
 
   async function sendUserInput(convoHistory) {
     let payload = convoHistory;
-
-    console.log(payload);
+    setIncomingResponse(true);
     try {
       const response = await fetch("http://localhost:3000/chat/start", {
         headers: {
@@ -30,8 +34,10 @@ const ChatScreen = ({ selectedAvatar }) => {
         method: "POST",
         body: JSON.stringify({ conversation: payload }),
       });
+      setIncomingResponse(false);
       return response.json();
     } catch (error) {
+      setIncomingResponse(false);
       setError({
         status: true,
         message: error.message,
@@ -53,7 +59,7 @@ const ChatScreen = ({ selectedAvatar }) => {
 
     try {
       const responseFromModel = await sendUserInput(updatedConvo);
-      console.log(responseFromModel);
+
       setMessages((prev) => [
         ...prev,
         {
@@ -75,6 +81,12 @@ const ChatScreen = ({ selectedAvatar }) => {
       });
     }
   };
+
+  useEffect(() => {
+    if (!selectedAvatar) {
+      navigate("/");
+    }
+  }, [selectedAvatar]);
 
   if (error.status) {
     return <div>{error.message}</div>;
@@ -102,6 +114,12 @@ const ChatScreen = ({ selectedAvatar }) => {
               </div>
             </div>
           ))}
+
+          {incomingResponse && (
+            <div className="flex justify-start">
+              <TypingIndicator />
+            </div>
+          )}
         </div>
 
         <div className="p-4 border-t bg-white flex space-x-2">

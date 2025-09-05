@@ -32,6 +32,7 @@ const SelectionScreen = ({ setSelectedAvatar }) => {
       <span className="text-blue-900 font-medium ">{props.data.label}</span>
     </Option>
   );
+
   
   return (
     <div className="fixed inset-0 bg-blue-900/50 flex justify-center items-center z-50">
